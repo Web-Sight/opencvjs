@@ -96,16 +96,16 @@ try:
                      '-DBUILD_opencv_gpustereo=OFF',
                      '-DBUILD_opencv_gpuwarping=OFF',
                      '-BUILD_opencv_hal=OFF',
-                     '-DBUILD_opencv_highgui=ON',
+                     '-DBUILD_opencv_highgui=OFF',
                      '-DBUILD_opencv_java=OFF',
                      '-DBUILD_opencv_legacy=OFF',
-                     '-DBUILD_opencv_ml=ON',
+                     '-DBUILD_opencv_ml=OFF',
                      '-DBUILD_opencv_nonfree=OFF',
                      '-DBUILD_opencv_optim=OFF',
-                     '-DBUILD_opencv_photo=ON',
+                     '-DBUILD_opencv_photo=OFF',
                      '-DBUILD_opencv_shape=ON',
                      '-DBUILD_opencv_objdetect=ON',
-                     '-DBUILD_opencv_softcascade=ON',
+                     '-DBUILD_opencv_softcascade=OFF',
                      '-DBUILD_opencv_stitching=OFF',
                      '-DBUILD_opencv_superres=OFF',
                      '-DBUILD_opencv_ts=OFF',
@@ -120,12 +120,12 @@ try:
                      '-DWITH_GSTREAMER=OFF',
                      '-DWITH_GTK=OFF',
                      '-DWITH_JASPER=OFF',
-                     '-DWITH_JPEG=ON',
+                     '-DWITH_JPEG=OFF',
                      '-DWITH_OPENCL=OFF',
                      '-DWITH_OPENCLAMDBLAS=OFF',
                      '-DWITH_OPENCLAMDFFT=OFF',
                      '-DWITH_OPENEXR=OFF',
-                     '-DWITH_PNG=ON',
+                     '-DWITH_PNG=OFF',
                      '-DWITH_PVAPI=OFF',
                      '-DWITH_TIFF=OFF',
                      '-DWITH_LIBV4L=OFF',
@@ -229,7 +229,8 @@ try:
     emscripten.Building.link(input_files, 'libOpenCV.bc')
     emcc_args += '--preload-file ../../test/data/'.split(' ') #For testing purposes
     emcc_args += ['--bind']
-#emcc_args += ['--memoryprofiler']
+    #emcc_args += ['--memoryprofiler']
+    #emcc_args += ['--tracing']      #   ability to use custom memory profiler, with hooks Module.onMalloc(), .onFree() and .onRealloc()
 
     emscripten.Building.emcc('libOpenCV.bc', emcc_args, opencv)
     stage('Wrapping')
