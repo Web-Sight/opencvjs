@@ -461,9 +461,9 @@ namespace Wrappers {
         return cv::adaptiveThreshold(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
-    void magnitudeThreshold_wrapper(const cv::Mat& arg1, const cv::Mat& arg2, cv::Mat& arg3, double thresh, double minValue, double maxValue ){
-        return cv::magnitudeThreshold(arg1, arg2, arg3, thresh, minValue, maxValue);
-    }
+    // void magnitudeThreshold_wrapper(const cv::Mat& arg1, const cv::Mat& arg2, cv::Mat& arg3, double thresh, double minValue, double maxValue ){
+    //     return cv::magnitudeThreshold(arg1, arg2, arg3, thresh, minValue, maxValue);
+    // }
 
     void add_wrapper(const cv::Mat& arg1, const cv::Mat& arg2, cv::Mat& arg3, const cv::Mat& arg4, int arg5) {
         return cv::add(arg1, arg2, arg3, arg4, arg5);
@@ -2486,7 +2486,7 @@ EMSCRIPTEN_BINDINGS(testBinding) {
 
     function("adaptiveThreshold", select_overload<void(const cv::Mat&, cv::Mat&, double, int, int, int, double)>(&Wrappers::adaptiveThreshold_wrapper));
 
-    function("magnitudeThreshold", select_overload<void(const cv::Mat&, const cv::Mat&, cv::Mat&, double, double, double)>(&Wrappers::magnitudeThreshold_wrapper));
+    // function("magnitudeThreshold", select_overload<void(const cv::Mat&, const cv::Mat&, cv::Mat&, double, double, double)>(&Wrappers::magnitudeThreshold_wrapper));
 
     function("add", select_overload<void(const cv::Mat&, const cv::Mat&, cv::Mat&, const cv::Mat&, int)>(&Wrappers::add_wrapper));
 
@@ -3298,7 +3298,7 @@ EMSCRIPTEN_BINDINGS(testBinding) {
         .smart_ptr<Ptr<cv::AKAZE>>("Ptr<AKAZE>")
 ;
 
-    emscripten::class_<cv::Feature2D ,base<Algorithm ,true>>("Feature2D")
+    emscripten::class_<cv::Feature2D ,base<Algorithm, true>>("Feature2D")
         .function("detect", select_overload<void(cv::Feature2D&,const cv::Mat&,std::vector<KeyPoint>&,const cv::Mat&)>(&Wrappers::Feature2D_detect_wrapper))
         .function("compute", select_overload<void(cv::Feature2D&,const cv::Mat&,std::vector<KeyPoint>&,cv::Mat&)>(&Wrappers::Feature2D_compute_wrapper))
         .function("defaultNorm", select_overload<int()const>(&cv::Feature2D::defaultNorm))
