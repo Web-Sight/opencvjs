@@ -99,10 +99,10 @@ try:
                      '-DBUILD_opencv_highgui=OFF',
                      '-DBUILD_opencv_java=OFF',
                      '-DBUILD_opencv_legacy=OFF',
-                     '-DBUILD_opencv_ml=OFF',
+                     '-DBUILD_opencv_ml=ON',
                      '-DBUILD_opencv_nonfree=OFF',
                      '-DBUILD_opencv_optim=OFF',
-                     '-DBUILD_opencv_photo=OFF',
+                     '-DBUILD_opencv_photo=ON',
                      '-DBUILD_opencv_shape=ON',
                      '-DBUILD_opencv_objdetect=ON',
                      '-DBUILD_opencv_softcascade=OFF',
@@ -181,7 +181,8 @@ try:
              os.path.join('..', 'modules', 'video', 'include'),
              os.path.join('..', 'modules', 'objdetect', 'include'),
              os.path.join('..', 'modules', 'imgcodecs', 'include'),
-             os.path.join('..', 'modules', 'hal', 'include')
+             os.path.join('..', 'modules', 'hal', 'include'),
+             os.path.join('..', 'build')
     ]
     include_dir_args = ['-I'+item for item in INCLUDE_DIRS]
     emcc_binding_args = ['--bind']
@@ -219,8 +220,8 @@ try:
                 os.path.join('lib','libopencv_video.a'),
 
                 # external libraries
-                os.path.join('3rdparty', 'lib', 'liblibjpeg.a'),
-                os.path.join('3rdparty', 'lib', 'liblibpng.a'),
+                # os.path.join('3rdparty', 'lib', 'liblibjpeg.a'),
+                # os.path.join('3rdparty', 'lib', 'liblibpng.a'),
                 os.path.join('3rdparty', 'lib', 'libzlib.a'),
                 #os.path.join('3rdparty', 'lib', 'liblibtiff.a'),
                 #os.path.join('3rdparty', 'lib', 'liblibwebp.a'),
