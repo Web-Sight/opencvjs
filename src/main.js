@@ -5,10 +5,14 @@ let asmWorker = new Worker('asm-worker.js');
 
 let ctxWasm, ctxAsm, ctxJS;
 let canvasWidth, canvasHeight;
+let perfwasm0, perfasm0,perfjs0, perfwasm1,perfasm1,perfjs1;
 
 function detectFace() {
+  perfwasm0=performance.now();
   startWasmWorker(ctxWasm.getImageData(0,0,canvasWidth, canvasHeight), 'faceDetect');
+  perfasm0=performance.now();
   startAsmWorker(ctxAsm.getImageData(0,0,canvasWidth, canvasHeight), 'faceDetect');
+  perfjs0=performance.now();
   // startJSWorker(ctxJS.getImageData(0,0,canvasWidth, canvasHeight), 'faceDetect');
 }
 
@@ -63,10 +67,16 @@ function updateCanvas(e, id) {
 
 wasmWorker.onmessage = function(e) {
   updateCanvas(e, 'canvas-wasm');
+  perfwasm1=performance.now();
+  console.log(` WASM: perfwasm0 ${perfwasm0}, perfasm0 ${perfasm0}, perfjs0 ${perfjs0}, perfwasm1 ${perfwasm1}, perfasm1 ${perfasm1}, perfjs1 ${perfjs1}`)
+
 }
 
 asmWorker.onmessage = function(e) {
   updateCanvas(e, 'canvas-asm');
+  perfasm1=performance.now();
+  console.log(`  ASM: perfwasm0 ${perfwasm0}, perfasm0 ${perfasm0}, perfjs0 ${perfjs0}, perfwasm1 ${perfwasm1}, perfasm1 ${perfasm1}, perfjs1 ${perfjs1}`)
+
 }
 
 let inputElement = document.getElementById("input");
