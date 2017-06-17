@@ -22,15 +22,25 @@
     </div>
 
     <div id="showcase">
-        <div>
-            <canvas id="canvas1"></canvas>
-            <canvas id="canvas2"></canvas>
-            <canvas id="canvas3"></canvas>
-        </div>
         <input type="file" id="input" name="file" />
+        <div>
+            <div class="holder">
+                <canvas id="canvas1"/></canvas>                
+            </div>
+            <div class="holder">
+                <canvas id="canvas2"/></canvas>
+            </div>
+            <div class="holder">
+                <canvas id="canvas3"/></canvas>
+            </div>
+        </div>
+                
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="node_modules/jquery.facedetection/dist/jquery.facedetection.min.js"></script>
     <script src='dat.gui.js'></script>
     <script async src="cv-wasm.js"></script>
     <script src="functions.js"></script>
     <script src="module.js"></script>
+    
 </body>
