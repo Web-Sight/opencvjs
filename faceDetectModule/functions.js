@@ -1,6 +1,30 @@
 var face_cascade;
 var eye_cascade;
 
+
+function detectFaceJquery() {
+    var t0 = performance.now();
+    (function () {
+        $('#canvas2').faceDetection({
+            complete: function (faces) {
+                console.log(faces)
+                const c = document.getElementById("canvas2");
+                const ctx = c.getContext("2d");
+
+                for (let i = 0; i < faces.length; i++) {
+                    ctx.strokeStyle = "blue";
+                    ctx.lineWidth = 3.5;
+                    ctx.strokeRect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
+
+                }
+            }
+        });
+    })();
+    var t1 = performance.now();
+    console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+};
+
+
 show_image = function (mat, canvas_id) {
     var data = mat.data(); 	// output is a Uint8Array that aliases directly into the Emscripten heap
 
@@ -32,8 +56,8 @@ function handleFiles(e) {
     var canvas = document.getElementById('canvas1');
     var canvas2 = document.getElementById('canvas2');
     var canvas3 = document.getElementById('canvas3');
-    var canvasWidth = 600;
-    var canvasHeight = 400;
+    var canvasWidth = 600/1.5;
+    var canvasHeight = 400/1.5;
     var ctx = canvas.getContext('2d');
     var ctx2 = canvas2.getContext('2d');
     var ctx3 = canvas3.getContext('2d');
@@ -72,50 +96,57 @@ function makeGray() {
     res.delete();
 }
 
-function detectFace() {
+function detectFaceWasm() {
 
-    if (face_cascade == undefined) {
-        console.log("Creating the Face cascade classifier");
-        face_cascade = new cv.CascadeClassifier();
-        face_cascade.load('../../test/data/haarcascade_frontalface_default.xml');
-    }
+    var t0 = performance.now();
+    (function () {
+        if (face_cascade == undefined) {
+            console.log("Creating the Face cascade classifier");
+            face_cascade = new cv.CascadeClassifier();
+            face_cascade.load('../../test/data/haarcascade_frontalface_default.xml');
+        }
 
-    var img = cv.matFromArray(getInput(), 24); // 24 for rgba
-
-
-    var img_gray = new cv.Mat();
-    var img_color = new cv.Mat(); // Opencv likes RGB
-    cv.cvtColor(img, img_gray, cv.ColorConversionCodes.COLOR_RGBA2GRAY.value, 0);
-    cv.cvtColor(img, img_color, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
+        var img = cv.matFromArray(getInput(), 24); // 24 for rgba
 
 
-    var faces = new cv.RectVector();
-    var s1 = [0, 0];
-    var s2 = [0, 0];
-    face_cascade.detectMultiScale(img_gray, faces, 1.1, 3, 0, s1, s2);
+        var img_gray = new cv.Mat();
+        var img_color = new cv.Mat(); // Opencv likes RGB
+        cv.cvtColor(img, img_gray, cv.ColorConversionCodes.COLOR_RGBA2GRAY.value, 0);
+        cv.cvtColor(img, img_color, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
 
-    for (var i = 0; i < faces.size(); i += 1) {
-        var faceRect = faces.get(i);
-        x = faceRect.x;
-        y = faceRect.y;
-        w = faceRect.width;
-        h = faceRect.height;
-        var p1 = [x, y];
-        var p2 = [x + w, y + h];
-        var color = new cv.Scalar(255, 0, 0);
-        cv.rectangle(img_color, p1, p2, color, 2, 8, 0);
-        faceRect.delete();
-        color.delete();
 
-    }
+        var faces = new cv.RectVector();
+        var s1 = [0, 0];
+        var s2 = [0, 0];
+        face_cascade.detectMultiScale(img_gray, faces, 1.1, 3, 0, s1, s2);
 
-    show_image(img_color, "canvas1");
+        for (var i = 0; i < faces.size(); i += 1) {
+            var faceRect = faces.get(i);
+            x = faceRect.x;
+            y = faceRect.y;
+            w = faceRect.width;
+            h = faceRect.height;
+            var p1 = [x, y];
+            var p2 = [x + w, y + h];
+            var color = new cv.Scalar(255, 0, 0);
+            cv.rectangle(img_color, p1, p2, color, 2, 8, 0);
+            faceRect.delete();
+            color.delete();
 
-    img.delete();
-    img_color.delete();
-    faces.delete();
-    img_gray.delete();
+        }
+
+        show_image(img_color, "canvas1");
+
+        img.delete();
+        img_color.delete();
+        faces.delete();
+        img_gray.delete();
+    })();
+    var t1 = performance.now();
+    console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+
 }
+
 
 function detectEyes() {
     if (face_cascade == undefined) {
@@ -271,33 +302,38 @@ function downloadCSV(args) {
     link.click();
 }
 
-var container;
-var Zee;
-var Control = {
-    detectFace: detectFace,
-    detectEyes: detectEyes,
-    testFunc: testFunc,
-    runAllTests: runAllTests
+function runAllFuncs() {
+    detectFaceJquery();
+    detectFaceWasm();
+        
 };
 
-function testFunc(){
-    console.log('test func working')
-}
+var container;
+// var Zee;
+var Control = {
+    detectFaceWasm: detectFaceWasm,
+    detectEyes: detectEyes,
+    detectFaceJquery: detectFaceJquery,
+    runAllFuncs: runAllFuncs
+};
+
+
 
 function init() {
 
     container = document.createElement('div');
     document.body.appendChild(container);
 
-
     gui = new dat.GUI({ autoPlace: false });
     document.body.appendChild(gui.domElement);
     gui.domElement.style.position = "absolute";
     gui.domElement.style.top = "0px";
     gui.domElement.style.right = "5px";
-    
-    gui.add(Control, 'detectFace');
-    gui.add(Control, 'detectEyes');
 
-}
+    gui.add(Control, 'detectFaceWasm');
+    gui.add(Control, 'detectFaceJquery');
+    gui.add(Control, 'detectEyes');
+    gui.add(Control, 'runAllFuncs');
+
+};
 init();
