@@ -1,0 +1,14 @@
+.holder{
+    border: 1px solid black;
+    display: inline-block;
+    margin: 0 4%;
+    text-align: center;
+    padding: 5px;
+}
+.holder:first-of-type{
+   width: 22%;
+   margin: 0 39%;
+}
+canvas{
+   display: inline-block;
+}
