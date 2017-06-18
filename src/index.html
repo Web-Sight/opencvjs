@@ -25,25 +25,32 @@
         <input type="file" id="input" name="file" />
         <div>
             <div class="holder">
-                <canvas id="original"/></canvas>                
+                <canvas id="original" /></canvas>
             </div>
             <br/>
             <div class="holder">
-                <canvas id="canvas-wasm"/></canvas>                
+                <canvas id="canvas-wasm" /></canvas>
             </div>
             <div class="holder">
-                <canvas id="canvas-asm"/></canvas>
+                <canvas id="canvas-asm" /></canvas>
             </div>
             <div class="holder">
-                <canvas id="canvas-js"/></canvas>
+                <canvas id="canvas-js" /></canvas>
+            </div>
+            <div class="holder">
+                <canvas id="canvas-test" /></canvas>
             </div>
         </div>
-                
+
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="node_modules/jquery.facedetection/dist/jquery.facedetection.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+    <!--<script src="node_modules/jquery.facedetection/dist/jquery.facedetection.min.js"></script>-->
+    <script src="haar-detector.min.js"></script>
+    <script src="haarcascade_frontalface_alt.js"></script>
     <script src='dat.gui.js'></script>
+    <script src="parallel.min.js"></script>
     <script src="main.js"></script>
+
     <!--<script src="functions.js"></script>-->
-    
+
 </body>
