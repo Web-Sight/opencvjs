@@ -5,13 +5,32 @@ let asmWorker = new Worker('asm-worker.js');
 
 let ctxWasm, ctxAsm, ctxJS, ctxRealWasm, ctxRealAsm, ctxRealJs;
 let canvasWidth, canvasHeight;
-let perfwasm0, perfasm0, perfjs0, perfwasm1, perfasm1, perfjs1;
+let perfwasm0, perfasm0, perfJS0, perfwasm1, perfasm1, perfjs1;
+let fn;
 let img = new Image();
 
+function reset() {
+  ctxAsm.drawImage(img, 0, 0);
+  ctxRealAsm.drawImage(img, 0, 0);
+  ctxWasm.drawImage(img, 0, 0);
+  ctxRealWasm.drawImage(img, 0, 0);
+  ctxJS.drawImage(img, 0, 0);
+  ctxRealJS.drawImage(img, 0, 0);
+}
+
+function detectFace() {  
+  perfasm0 = performance.now();
+  startAsmWorker(ctxAsm.getImageData(0, 0, canvasWidth, canvasHeight), 'faceDetect');
+  perfwasm0 = performance.now();
+  startWasmWorker(ctxWasm.getImageData(0, 0, canvasWidth, canvasHeight), 'faceDetect');
+  fn = 'face';
+}
 function detectEyes() {
-  startWasmWorker(ctxWasm.getImageData(0, 0, canvasWidth, canvasHeight), 'eyesDetect');
+  perfasm0 = performance.now();
   startAsmWorker(ctxAsm.getImageData(0, 0, canvasWidth, canvasHeight), 'eyesDetect');
-  // startJSWorker(ctxJS.getImageData(0, 0, canvasWidth, canvasHeight), 'eyesDetect');
+  perfwasm0 = performance.now();
+  startWasmWorker(ctxWasm.getImageData(0, 0, canvasWidth, canvasHeight), 'eyesDetect');  
+  fn = 'eyes';
 }
 
 function detectFaceWasm() {
@@ -24,8 +43,9 @@ function detectFaceAsm() {
   startAsmWorker(ctxWasm.getImageData(0, 0, canvasWidth, canvasHeight), 'faceDetect');
 }
 
-function detectFaceJs() {
-  getFaceJS();
+function detectFaceJs(obj) {
+  perfJS0 = performance.now();
+  getFaceJS(obj);
 }
 
 function startWasmWorker(imageData, command) {
@@ -35,7 +55,7 @@ function startWasmWorker(imageData, command) {
 }
 
 function startAsmWorker(imageData, command) {
-  let message = { cmd: command, img: imageData, type:"asm" };
+  let message = { cmd: command, img: imageData, type: "asm" };
 
   asmWorker.postMessage(message);
 }
@@ -78,16 +98,14 @@ asmWorker.onmessage = function (e) {
   perfasm1 = performance.now();
   console.log(`ASM: ${perfasm1 - perfasm0}`);
   ctxRealAsm.drawImage(document.getElementById('canvas-asm'), 0, 0);
-
+  perfJS0 = performance.now();
+  detectFaceJs(fn);
 }
 
-// jsWorker.onmessage = function (e) {
-//   console.log(e);
-//   updateCanvasJS(e);
-// }
+
 
 let inputElement = document.getElementById("input");
-inputElement.addEventListener("change", handleFiles, Parallel);
+inputElement.addEventListener("change", handleFiles);
 
 function handleFiles(e) {
   let canvasWasm = document.getElementById('canvas-wasm');
@@ -122,10 +140,8 @@ function handleFiles(e) {
 
 let container;
 let Control = {
+  'Detect face(all)': detectFace,
   'Detect eyes(all)': detectEyes,
-  'Detect face(was)': detectFaceWasm,
-  'Detect face(asm)': detectFaceAsm,
-  'Detect face(js)': detectFaceJs,
 };
 
 function init() {
@@ -139,17 +155,20 @@ function init() {
   gui.domElement.style.right = "5px";
 
   gui.add(Control, ['Detect eyes(all)']);
-  gui.add(Control, ['Detect face(was)']);
-  gui.add(Control, ['Detect face(asm)']);
-  gui.add(Control, ['Detect face(js)']);
+  gui.add(Control, ['Detect face(all)']);
 };
 
 init();
 
-function getFaceJS() {
+function getFaceJS(obj) {
   perfjs0 = performance.now();
-  new HAAR.Detector(haarcascade_frontalface_alt, false)
-    .image(img, .5)
+  let detector;  
+  if (obj === 'face') detector = new HAAR.Detector(haarcascade_frontalface_alt, false);
+  else {
+    
+    detector = new HAAR.Detector(haarcascade_eye, false);
+  }
+  detector.image(img, .5)
     .interval(40)
     .selection('auto')
     .complete(function () {
@@ -163,7 +182,7 @@ function getFaceJS() {
         ctxJS.strokeRect(rect.x, rect.y, rect.width, rect.height);
       }
       perfjs1 = performance.now();
-      console.log(`JS: ${perfjs1 - perfjs0}`)
+      console.log(`JS: ${perfjs1 - perfJS0}`)
       ctxRealJS.drawImage(document.getElementById('canvas-js'), 0, 0);
     })
     .cannyThreshold({ low: 90, high: 200 })
