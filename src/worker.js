@@ -168,7 +168,7 @@ function postMessageToRedraw(img_color) {
 	postMessage(message);
 }
 
-function faceDetect(imageData) {
+function faceDetect(imageData,type) {
 	loadFaceDetectTrainingSet();
 
 	let img = cv.matFromArray(imageData, 24); // 24 for rgba
@@ -192,8 +192,13 @@ function faceDetect(imageData) {
 		h = faceRect.height;
 		let p1 = [x, y];
 		let p2 = [x+w, y+h];
-		let color = new cv.Scalar(255,0,0);
-		cv.rectangle(img_color, p1, p2, color, 2, 8, 0);
+		let color;
+		if(type){
+			color = new cv.Scalar(0,0,255);	
+		}else{
+			color = new cv.Scalar(255,0,0);
+		}		
+		cv.rectangle(img_color, p1, p2, color, 2, 16, 0);
 		faceRect.delete();
 		color.delete();
 	}
@@ -273,7 +278,7 @@ self.onmessage = function (e) {
 	// let objectRecognition;
 
   if (e.data.cmd === 'faceDetect') {
-    faceDetect(e.data.img);
+    faceDetect(e.data.img, e.data.type);
 		// objectRecognition = new FaceRecognition(e.data.img);
   }
 	else if (e.data.cmd === 'eyesDetect') {

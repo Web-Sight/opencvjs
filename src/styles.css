@@ -1,14 +1,22 @@
+
 .holder{
     border: 1px solid black;
     display: inline-block;
-    margin: 0 4%;
+    margin-top: 100px;
     text-align: center;
     padding: 5px;
+    width: 32%;
 }
-.holder:first-of-type{
-   width: 22%;
-   margin: 0 39%;
-}
+
 canvas{
    display: inline-block;
+   width: 99%;
+}
+
+#canvas-test{
+    width: 50%;
+}
+
+.real{
+    display: none;
 }
