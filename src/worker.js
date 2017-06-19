@@ -14,7 +14,7 @@ var face_cascade, eye_cascade;
 // 					console.log('load training data', load);
 // 		}
 // 	}
-  
+
 // 	detect() {
 // 		this.img = cv.matFromArray(this.imageData, 24); // 24 for rgba
 
@@ -140,17 +140,15 @@ var face_cascade, eye_cascade;
 // }
 
 function loadFaceDetectTrainingSet() {
-	if (face_cascade == undefined){
-				console.log("Creating the Face cascade classifier");
-				face_cascade = new cv.CascadeClassifier();
-				let load = face_cascade.load('../../test/data/haarcascade_frontalface_default.xml');
-				console.log('load training data', load);
+	if (face_cascade == undefined) {	
+		face_cascade = new cv.CascadeClassifier();
+		let load = face_cascade.load('../../test/data/haarcascade_frontalface_default.xml');
+		console.log('load training data', load);
 	}
 }
 
 function loadEyesDetectTrainingSet() {
-	if (eye_cascade == undefined ){
-		console.log("Creating the eye cascade classifier");
+	if (eye_cascade == undefined) {		
 		eye_cascade = new cv.CascadeClassifier();
 		eye_cascade.load('../../test/data/haarcascade_eye.xml');
 	}
@@ -158,17 +156,17 @@ function loadEyesDetectTrainingSet() {
 
 function postMessageToRedraw(img_color) {
 	let message = {
-			width: img_color.cols,
-			height: img_color.rows,
-			data: img_color.data(),
-			channels: img_color.channels(),
-			channelSize: img_color.elemSize1()
-		};
+		width: img_color.cols,
+		height: img_color.rows,
+		data: img_color.data(),
+		channels: img_color.channels(),
+		channelSize: img_color.elemSize1()
+	};
 
 	postMessage(message);
 }
 
-function faceDetect(imageData,type) {
+function faceDetect(imageData, type) {
 	loadFaceDetectTrainingSet();
 
 	let img = cv.matFromArray(imageData, 24); // 24 for rgba
@@ -183,21 +181,20 @@ function faceDetect(imageData,type) {
 	let s2 = [0, 0];
 	face_cascade.detectMultiScale(img_gray, faces, 1.1, 3, 0, s1, s2);
 
-	for (let i = 0; i < faces.size(); i += 1)
-	{
+	for (let i = 0; i < faces.size(); i += 1) {
 		let faceRect = faces.get(i);
-		x = faceRect.x ;
-		y = faceRect.y ;
-		w = faceRect.width ;
+		x = faceRect.x;
+		y = faceRect.y;
+		w = faceRect.width;
 		h = faceRect.height;
 		let p1 = [x, y];
-		let p2 = [x+w, y+h];
+		let p2 = [x + w, y + h];
 		let color;
-		if(type){
-			color = new cv.Scalar(0,0,255);	
-		}else{
-			color = new cv.Scalar(255,0,0);
-		}		
+		if (type) {
+			color = new cv.Scalar(0, 0, 255);
+		} else {
+			color = new cv.Scalar(255, 0, 0);
+		}
 		cv.rectangle(img_color, p1, p2, color, 2, 16, 0);
 		faceRect.delete();
 		color.delete();
@@ -205,15 +202,15 @@ function faceDetect(imageData,type) {
 
 	postMessageToRedraw(img_color)
 
-	img.delete();		
+	img.delete();
 	img_color.delete();
 	faces.delete();
 	img_gray.delete();
 }
 
-function eyesDetect(imageData) {
+function eyesDetect(imageData, type) {
 	loadFaceDetectTrainingSet();
-  loadEyesDetectTrainingSet()
+	loadEyesDetectTrainingSet()
 
 	let img = cv.matFromArray(imageData, 24); // 24 for rgba
 	let img_gray = new cv.Mat();
@@ -224,36 +221,37 @@ function eyesDetect(imageData) {
 	let faces = new cv.RectVector();
 	let s1 = [0, 0];
 	let s2 = [0, 0];
-	face_cascade.detectMultiScale(img_gray, faces ,1.1, 3, 0, s1, s2);
+	face_cascade.detectMultiScale(img_gray, faces, 1.1, 3, 0, s1, s2);
 
-	for (let i = 0 ; i < faces.size(); i += 1)
-	{
+	for (let i = 0; i < faces.size(); i += 1) {
 		let faceRect = faces.get(i);
-		x = faceRect.x ;
-		y = faceRect.y ;
-		w = faceRect.width ;
+		x = faceRect.x;
+		y = faceRect.y;
+		w = faceRect.width;
 		h = faceRect.height;
 		let p1 = [x, y];
-		let p2 = [x+w, y+h];
-		let color = new cv.Scalar(255,0,0);
-		let gcolor = new cv.Scalar(0,255,0);
+		let p2 = [x + w, y + h];
+		if (type) {
+			color = new cv.Scalar(0, 0, 255);
+		} else {
+			color = new cv.Scalar(255, 0, 0);
+		}		
+		let gcolor = new cv.Scalar(0, 255, 0);
 		cv.rectangle(img_color, p1, p2, color, 2, 8, 0);
-		let roiRect = new cv.Rect(x,y,w,h);
+		let roiRect = new cv.Rect(x, y, w, h);
 
 		let roi_gray = img_gray.getROI_Rect(roiRect);
 		let roi_color = img_color.getROI_Rect(roiRect);
 
 		let eyes = new cv.RectVector();
-		eye_cascade.detectMultiScale(roi_gray,eyes,1.1, 3, 0, s1, s2);
+		eye_cascade.detectMultiScale(roi_gray, eyes, 1.1, 3, 0, s1, s2);
+		
+		for (let j = 0; j < eyes.size(); j += 1) {
 
-		console.log(eyes.size() + " eyes were found.");
-		for (let j = 0; j < eyes.size(); j += 1){
+			let eyeRect = eyes.get(j);			
 
-			let eyeRect = eyes.get(j);
-			console.log(eyeRect.width + "," + eyeRect.height);
-
-			let p1 = [x+eyeRect.x, y+eyeRect.y];
-			let p2 = [x+eyeRect.x+eyeRect.width, y+eyeRect.y+eyeRect.height];
+			let p1 = [x + eyeRect.x, y + eyeRect.y];
+			let p2 = [x + eyeRect.x + eyeRect.width, y + eyeRect.y + eyeRect.height];
 
 			cv.rectangle(img_color, p1, p2, gcolor, 2, 8, 0);
 		}
@@ -277,12 +275,12 @@ function eyesDetect(imageData) {
 self.onmessage = function (e) {
 	// let objectRecognition;
 
-  if (e.data.cmd === 'faceDetect') {
-    faceDetect(e.data.img, e.data.type);
+	if (e.data.cmd === 'faceDetect') {
+		faceDetect(e.data.img, e.data.type);
 		// objectRecognition = new FaceRecognition(e.data.img);
-  }
+	}
 	else if (e.data.cmd === 'eyesDetect') {
-		eyesDetect(e.data.img);
+		eyesDetect(e.data.img,e.data.type);
 		// objectRecognition = new EyesRecognition(e.data.img);
 	}
 
@@ -294,6 +292,6 @@ self.onmessage = function (e) {
 	// }
 }
 
-self.onerror = function(e) {
-  console.log(e);
+self.onerror = function (e) {
+	console.log(e);
 }

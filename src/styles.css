@@ -2,7 +2,7 @@
 .holder{
     border: 1px solid black;
     display: inline-block;
-    margin-top: 100px;
+    margin-top: 20px;
     text-align: center;
     padding: 5px;
     width: 32%;
@@ -19,4 +19,16 @@ canvas{
 
 .real{
     display: none;
+}
+
+p{
+    display: inline-block;
+    /*font-weight: bold;*/
+    font-weight: 500;
+    font-size: 2em;
+    font-family: Courier New, Courier, monospace
+    
+}
+#title{
+    text-align: center;
 }
