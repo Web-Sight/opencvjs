@@ -11,7 +11,7 @@ You can build two different versions of OpenCV.js: asm.js or WebAssembly (experi
 1. Get the source code
 
   ```
-  git clone https://github.com/ucisysarch/opencvjs.git
+  git clone https://github.com/Web-Sight/opencvjs.git
   cd opencvjs
   git clone https://github.com/opencv/opencv
   cd opencv
